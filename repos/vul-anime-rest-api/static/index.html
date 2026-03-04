@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Recommendations</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+        .header {
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+        .anime-card {
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        .anime-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .btn-action {
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        .genre-badge {
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        #loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .rating-color {
+            color: #ffc107;
+        }
+        .footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header text-center">
+            <h1>Anime Recommendations</h1>
+            <p class="lead">Discover your next favorite anime!</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row mb-4">
+            <div class="col-md-12 text-center">
+                <button id="getAllAnime" class="btn btn-primary btn-action">Get All Anime</button>
+                <button id="getRandomAnime" class="btn btn-success btn-action">Random Recommendation</button>
+                <button id="showSearchForm" class="btn btn-info btn-action">Search by Title</button>
+                <button id="showFilterForm" class="btn btn-warning btn-action">Filter Recommendations</button>
+                <button id="showRateForm" class="btn btn-danger btn-action">Rate an Anime</button>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loading">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading data...</p>
+        </div>
+
+        <!-- Search Form -->
+        <div id="searchForm" class="row mb-4" style="display: none;">
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        Search Anime by Title
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="searchTitle" class="form-label">Anime Title</label>
+                            <input type="text" class="form-control" id="searchTitle" placeholder="Enter anime title">
+                        </div>
+                        <button id="searchButton" class="btn btn-info">Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Form -->
+        <div id="filterForm" class="row mb-4" style="display: none;">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header bg-warning">
+                        Filter Recommendations
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Genres (select multiple)</label>
+                                <div class="form-check">
+                                    <input class="form-check-input genre-checkbox" type="checkbox" value="action" id="genreAction">
+                                    <label class="form-check-label" for="genreAction">Action</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input genre-checkbox" type="checkbox" value="adventure" id="genreAdventure">
+                                    <label class="form-check-label" for="genreAdventure">Adventure</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input genre-checkbox" type="checkbox" value="comedy" id="genreComedy">
+                                    <label class="form-check-label" for="genreComedy">Comedy</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input genre-checkbox" type="checkbox" value="drama" id="genreDrama">
+                                    <label class="form-check-label" for="genreDrama">Drama</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input genre-checkbox" type="checkbox" value="fantasy" id="genreFantasy">
+                                    <label class="form-check-label" for="genreFantasy">Fantasy</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input genre-checkbox" type="checkbox" value="romance" id="genreRomance">
+                                    <label class="form-check-label" for="genreRomance">Romance</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="minRating" class="form-label">Minimum Rating</label>
+                                    <select class="form-select" id="minRating">
+                                        <option value="">Any Rating</option>
+                                        <option value="1">G (All Ages)</option>
+                                        <option value="2">PG (Children)</option>
+                                        <option value="3">PG-13 (Teens 13+)</option>
+                                        <option value="4">R (17+)</option>
+                                        <option value="5">R+ (Mild Nudity)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="maxEpisodes" class="form-label">Maximum Episodes</label>
+                                    <input type="number" class="form-control" id="maxEpisodes" min="1" placeholder="Any number">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Year Range</label>
+                                    <div class="row">
+                                        <div class="col">
+                                            <input type="number" class="form-control" id="startYear" placeholder="From" min="1980" max="2025">
+                                        </div>
+                                        <div class="col">
+                                            <input type="number" class="form-control" id="endYear" placeholder="To" min="1980" max="2025">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="filterButton" class="btn btn-warning mt-3">Get Recommendations</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rate Form -->
+        <div id="rateForm" class="row mb-4" style="display: none;">
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-header bg-danger text-white">
+                        Rate an Anime
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="animeId" class="form-label">Anime ID</label>
+                            <input type="number" class="form-control" id="animeId" min="1" placeholder="Enter anime ID">
+                        </div>
+                        <div class="mb-3">
+                            <label for="ratingScore" class="form-label">Your Rating (1-10)</label>
+                            <input type="number" class="form-control" id="ratingScore" min="1" max="10" placeholder="Enter your rating">
+                        </div>
+                        <div class="mb-3">
+                            <label for="ratingComment" class="form-label">Comment (optional)</label>
+                            <textarea class="form-control" id="ratingComment" rows="3" placeholder="Enter your comment"></textarea>
+                        </div>
+                        <button id="rateButton" class="btn btn-danger">Submit Rating</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Container -->
+        <div id="resultsContainer" class="row">
+            <!-- Anime cards will be dynamically inserted here -->
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Anime Recommendations API &copy; 2025</p>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // API Base URL
+        const API_BASE_URL = 'http://localhost:8000';
+
+        // DOM Elements
+        const loadingIndicator = document.getElementById('loading');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const searchForm = document.getElementById('searchForm');
+        const filterForm = document.getElementById('filterForm');
+        const rateForm = document.getElementById('rateForm');
+
+        // Helper function to show loading indicator
+        function showLoading() {
+            loadingIndicator.style.display = 'block';
+            resultsContainer.innerHTML = '';
+        }
+
+        // Helper function to hide loading indicator
+        function hideLoading() {
+            loadingIndicator.style.display = 'none';
+        }
+
+        // Helper function to display error message
+        function showError(message) {
+            resultsContainer.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-danger" role="alert">
+                        ${message}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Helper function to create anime cards
+        function createAnimeCard(anime) {
+            // Create genre badges
+            const genreBadges = anime.genres.map(genre => 
+                `<span class="badge bg-secondary genre-badge">${genre}</span>`
+            ).join('');
+
+            // Map rating to user-friendly text
+            const ratingMap = {
+                'g': 'G (All Ages)',
+                'pg': 'PG (Children)',
+                'pg_13': 'PG-13 (Teens 13+)',
+                'r': 'R (17+)',
+                'r_plus': 'R+ (Mild Nudity)',
+                'rx': 'RX (Explicit)'
+            };
+
+            return `
+                <div class="col-md-4">
+                    <div class="card anime-card">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="card-title mb-0">${anime.title}</h5>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">ID: ${anime.id} | ${anime.year} | ${anime.studio}</h6>
+                            <p class="card-text">${anime.description}</p>
+                            <div class="mb-2">
+                                ${genreBadges}
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-info">${anime.episodes} episodes</span>
+                                <span class="badge bg-warning text-dark">${ratingMap[anime.rating] || anime.rating}</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button class="btn btn-sm btn-outline-primary" onclick="getAnimeDetails(${anime.id})">View Details</button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="showRateAnimeForm(${anime.id})">Rate</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Function to get all anime
+        async function getAllAnime() {
+            try {
+                showLoading();
+                hideAllForms();
+                
+                const response = await fetch(`${API_BASE_URL}/anime/all`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch anime list');
+                }
+                
+                const data = await response.json();
+                displayAnimeList(data.anime_list);
+            } catch (error) {
+                console.error('Error:', error);
+                showError(`Error: ${error.message}`);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Function to get random anime
+        async function getRandomAnime() {
+            try {
+                showLoading();
+                hideAllForms();
+                
+                const response = await fetch(`${API_BASE_URL}/anime/random`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to get random anime');
+                }
+                
+                const data = await response.json();
+                displayAnimeList([data.anime]);
+            } catch (error) {
+                console.error('Error:', error);
+                showError(`Error: ${error.message}`);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Function to search anime by title
+        async function searchAnime() {
+            try {
+                const title = document.getElementById('searchTitle').value.trim();
+                if (!title) {
+                    alert('Please enter an anime title');
+                    return;
+                }
+                
+                showLoading();
+                
+                const response = await fetch(`${API_BASE_URL}/anime/search?title=${encodeURIComponent(title)}`);
+                if (!response.ok) {
+                    throw new Error('Failed to search anime');
+                }
+                
+                const data = await response.json();
+                if (data.results.length === 0) {
+                    resultsContainer.innerHTML = `
+                        <div class="col-12">
+                            <div class="alert alert-info" role="alert">
+                                No anime found matching "${title}"
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    displayAnimeList(data.results);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError(`Error: ${error.message}`);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Function to filter anime recommendations
+        async function filterAnime() {
+            try {
+                showLoading();
+                
+                // Get selected genres
+                const selectedGenres = [];
+                document.querySelectorAll('.genre-checkbox:checked').forEach(checkbox => {
+                    selectedGenres.push(checkbox.value);
+                });
+                
+                // Get other filter values
+                const minRating = document.getElementById('minRating').value;
+                const maxEpisodes = document.getElementById('maxEpisodes').value;
+                const startYear = document.getElementById('startYear').value;
+                const endYear = document.getElementById('endYear').value;
+                
+                // Build request body
+                const requestBody = {};
+                
+                if (selectedGenres.length > 0) {
+                    requestBody.genres = selectedGenres;
+                }
+                
+                if (minRating) {
+                    requestBody.min_rating = parseInt(minRating);
+                }
+                
+                if (maxEpisodes) {
+                    requestBody.max_episodes = parseInt(maxEpisodes);
+                }
+                
+                if (startYear && endYear) {
+                    requestBody.year_range = [parseInt(startYear), parseInt(endYear)];
+                }
+                
+                const response = await fetch(`${API_BASE_URL}/anime/recommend`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to get recommendations');
+                }
+                
+                const data = await response.json();
+                if (data.recommendations.length === 0) {
+                    resultsContainer.innerHTML = `
+                        <div class="col-12">
+                            <div class="alert alert-info" role="alert">
+                                No anime found matching your criteria
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    displayAnimeList(data.recommendations);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError(`Error: ${error.message}`);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Function to rate an anime
+        async function rateAnime() {
+            try {
+                const animeId = parseInt(document.getElementById('animeId').value);
+                const score = parseInt(document.getElementById('ratingScore').value);
+                const comment = document.getElementById('ratingComment').value;
+                
+                if (!animeId || isNaN(animeId)) {
+                    alert('Please enter a valid anime ID');
+                    return;
+                }
+                
+                if (!score || isNaN(score) || score < 1 || score > 10) {
+                    alert('Please enter a valid rating between 1 and 10');
+                    return;
+                }
+                
+                showLoading();
+                
+                const response = await fetch(`${API_BASE_URL}/anime/rate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        anime_id: animeId,
+                        score: score,
+                        comment: comment || null
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to submit rating');
+                }
+                
+                const data = await response.json();
+                resultsContainer.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-success" role="alert">
+                            ${data.message}
+                        </div>
+                    </div>
+                `;
+                
+                // Clear form
+                document.getElementById('animeId').value = '';
+                document.getElementById('ratingScore').value = '';
+                document.getElementById('ratingComment').value = '';
+            } catch (error) {
+                console.error('Error:', error);
+                showError(`Error: ${error.message}`);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Function to get anime details by ID
+        async function getAnimeDetails(id) {
+            try {
+                showLoading();
+                hideAllForms();
+                
+                const response = await fetch(`${API_BASE_URL}/anime/${id}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch anime details');
+                }
+                
+                const anime = await response.json();
+                displayAnimeList([anime]);
+            } catch (error) {
+                console.error('Error:', error);
+                showError(`Error: ${error.message}`);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Function to display anime list
+        function displayAnimeList(animeList) {
+            if (!animeList || animeList.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-info" role="alert">
+                            No anime found
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            const animeCards = animeList.map(anime => createAnimeCard(anime)).join('');
+            resultsContainer.innerHTML = animeCards;
+        }
+
+        // Function to show rate anime form with pre-filled ID
+        function showRateAnimeForm(id) {
+            hideAllForms();
+            rateForm.style.display = 'block';
+            document.getElementById('animeId').value = id;
+            document.getElementById('ratingScore').focus();
+            
+            // Scroll to the form
+            rateForm.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Function to hide all forms
+        function hideAllForms() {
+            searchForm.style.display = 'none';
+            filterForm.style.display = 'none';
+            rateForm.style.display = 'none';
+        }
+
+        // Event Listeners
+        document.getElementById('getAllAnime').addEventListener('click', getAllAnime);
+        document.getElementById('getRandomAnime').addEventListener('click', getRandomAnime);
+        
+        document.getElementById('showSearchForm').addEventListener('click', () => {
+            hideAllForms();
+            searchForm.style.display = 'block';
+        });
+        
+        document.getElementById('showFilterForm').addEventListener('click', () => {
+            hideAllForms();
+            filterForm.style.display = 'block';
+        });
+        
+        document.getElementById('showRateForm').addEventListener('click', () => {
+            hideAllForms();
+            rateForm.style.display = 'block';
+        });
+        
+        document.getElementById('searchButton').addEventListener('click', searchAnime);
+        document.getElementById('filterButton').addEventListener('click', filterAnime);
+        document.getElementById('rateButton').addEventListener('click', rateAnime);
+
+        // Initialize the app by loading all anime
+        window.onload = getAllAnime;
+    </script>
+</body>
+</html>

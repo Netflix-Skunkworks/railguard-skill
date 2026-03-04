@@ -1,0 +1,216 @@
+# Application Configuration with Encrypted Secrets
+# This file demonstrates the PROPER way to store secrets
+# using an encrypted secrets manager.
+#
+# SECURITY NOTE: The encrypted strings shown here are examples and should
+# be replaced with actual encrypted secrets in a real deployment.
+
+server:
+  port: 8000
+  host: "0.0.0.0"
+
+application:
+  name: "anime-recommendations-api"
+  version: "1.0.0"
+  environment: "production"
+
+# Database configurations with encrypted passwords
+database:
+  primary:
+    host: "prod-analytics.anime-db.example.com"
+    port: 5432
+    database: "anime_analytics"
+    username: "anime_app_user"
+    # ENCRYPTED: User-provided database password
+    password:
+      encrypted:
+        secret: "MGICAQAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAjBgkqhkiG9w0BCQUxFhYUMjAyNDEyMzAxMjAwMDBaMAkGCSqGSIb3DQEJBQAwDQYJKoZIhvcNAQEBBQAEggEAbCdeFghijklmnoPQRStuvwxyz"
+    pool_size: 10
+    max_overflow: 20
+    
+  recommendations:
+    host: "recommendations.mysql.example.com"
+    port: 3306
+    database: "anime_recommendations"
+    username: "rec_service"
+    # ENCRYPTED: MySQL password for recommendations service
+    password:
+      encrypted:
+        secret: "MGICAQAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAjBgkqhkiG9w0BCQUxFhYUMjAyNDEyMzAxMjAwMDBaMQkGCSqGSIb3DQEJBQAwDQYJKoZIhvcNAQEBBQAEggEAXyZeFghijklmnoPQRStuvwxyz"
+    charset: "utf8mb4"
+    
+  cache:
+    host: "anime-cache.redis.example.com"
+    port: 6379
+    # ENCRYPTED: Redis authentication password
+    password:
+      encrypted:
+        secret: "MGICAQAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAjBgkqhkiG9w0BCQUxFhYUMjAyNDEyMzAxMjAwMDBaMgkGCSqGSIb3DQEJBQAwDQYJKoZIhvcNAQEBBQAEggEAZcfeFghijklmnoPQRStuvwxyz"
+    db: 0
+    ssl: true
+
+# External API integrations with encrypted secrets
+external_apis:
+  myanimelist:
+    client_id: "mal_client_12345678"
+    # ENCRYPTED: MyAnimeList API client secret
+    client_secret:
+      encrypted:
+        secret: "MGICAQAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAjBgkqhkiG9w0BCQUxFhYUMjAyNDEyMzAxMjAwMDBaNAkGCSqGSIb3DQEJBQAwDQYJKoZIhvcNAQEBBQAEggEAbdgeFghijklmnoPQRStuvwxyz"
+    base_url: "https://api.myanimelist.net/v2"
+    rate_limit: 100
+    
+  anidb:
+    # ENCRYPTED: AniDB API key for anime data access
+    api_key:
+      encrypted:
+        secret: "MGICAQAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAjBgkqhkiG9w0BCQUxFhYUMjAyNDEyMzAxMjAwMDBaNQkGCSqGSIb3DQEJBQAwDQYJKoZIhvcNAQEBBQAEggEAceheFghijklmnoPQRStuvwxyz"
+    client_name: "animerecommendapi"
+    client_version: "1"
+    base_url: "http://api.anidb.net:9001/httpapi"
+    
+  crunchyroll:
+    partner_id: "crunchyroll_partner_xyz789"
+    # ENCRYPTED: Crunchyroll Partner API secret
+    partner_secret:
+      encrypted:
+        secret: "MGICAQAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAjBgkqhkiG9w0BCQUxFhYUMjAyNDEyMzAxMjAwMDBaNwkGCSqGSIb3DQEJBQAwDQYJKoZIhvcNAQEBBQAEggEAdfiFghijklmnoPQRStuvwxyz"
+    base_url: "https://partner-api.crunchyroll.com/v1"
+    timeout: 30
+
+# Cloud service credentials  
+cloud_services:
+  aws:
+    region: "us-west-2"
+    access_key_id: "AKIAI44QH8DHBEXAMPLE"
+    # ENCRYPTED: AWS secret access key for media storage
+    secret_access_key:
+      encrypted:
+        secret: "MGICAQAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAjBgkqhkiG9w0BCQUxFhYUMjAyNDEyMzAxMjAwMDBaOAkGCSqGSIb3DQEJBQAwDQYJKoZIhvcNAQEBBQAEggEAegkFghijklmnoPQRStuvwxyz"
+    s3:
+      bucket: "anime-media-assets-prod"
+      region: "us-west-2"
+      
+  gcp:
+    project_id: "anime-recommendations-ml"
+    # ENCRYPTED: Google Cloud service account private key
+    private_key:
+      encrypted:
+        secret: "MGICAQAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAjBgkqhkiG9w0BCQUxFhYUMjAyNDEyMzAxMjAwMDBaOQkGCSqGSIb3DQEJBQAwDQYJKoZIhvcNAQEBBQAEggEAfhlFghijklmnoPQRStuvwxyz"
+    client_email: "anime-ml-service@anime-recommendations-ml.iam.gserviceaccount.com"
+    
+  azure:
+    tenant_id: "12345678-1234-1234-1234-123456789abc"
+    client_id: "87654321-4321-4321-4321-cba987654321"
+    # ENCRYPTED: Azure client secret for CDN access
+    client_secret:
+      encrypted:
+        secret: "MGICAQAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAjBgkqhkiG9w0BCQUxFhYUMjAyNDEyMzAxMjAwMDBaOgkGCSqGSIb3DQEJBQAwDQYJKoZIhvcNAQEBBQAEggEAgimFghijklmnoPQRStuvwxyz"
+    subscription_id: "abcdef12-3456-7890-abcd-ef1234567890"
+
+# Third-party service configurations
+third_party_services:
+  email:
+    provider: "sendgrid"
+    from_email: "noreply@anime-app.example.com"
+    # ENCRYPTED: SendGrid API key for email notifications
+    api_key:
+      encrypted:
+        secret: "MGICAQAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAjBgkqhkiG9w0BCQUxFhYUMjAyNDEyMzAxMjAwMDBaOwkGCSqGSIb3DQEJBQAwDQYJKoZIhvcNAQEBBQAEggEAhjnFghijklmnoPQRStuvwxyz"
+    template_id: "d-1234567890abcdef"
+    
+  sms:
+    provider: "twilio"
+    account_sid: "AC<REDACTED>"
+    # ENCRYPTED: Twilio authentication token for SMS
+    auth_token:
+      encrypted:
+        secret: "MGICAQAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAjBgkqhkiG9w0BCQUxFhYUMjAyNDEyMzAxMjAwMDBaPAkGCSqGSIb3DQEJBQAwDQYJKoZIhvcNAQEBBQAEggEAikoFghijklmnoPQRStuvwxyz"
+    from_phone: "+15551234567"
+    
+  payments:
+    provider: "stripe"
+    publishable_key: "pk_live_<REDACTED>"
+    # ENCRYPTED: Stripe secret key for payment processing
+    secret_key:
+      encrypted:
+        secret: "MGICAQAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAjBgkqhkiG9w0BCQUxFhYUMjAyNDEyMzAxMjAwMDBaPQkGCSqGSIb3DQEJBQAwDQYJKoZIhvcNAQEBBQAEggEAjlpFghijklmnoPQRStuvwxyz"
+    # ENCRYPTED: Stripe webhook endpoint secret
+    webhook_secret:
+      encrypted:
+        secret: "MGICAQAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAjBgkqhkiG9w0BCQUxFhYUMjAyNDEyMzAxMjAwMDBaPgkGCSqGSIb3DQEJBQAwDQYJKoZIhvcNAQEBBQAEggEAkmqFghijklmnoPQRStuvwxyz"
+    
+  search:
+    provider: "elasticsearch"
+    hosts: 
+      - "https://anime-search.es.example.com:9200"
+    username: "elastic_anime_user"
+    # ENCRYPTED: Elasticsearch cluster password
+    password:
+      encrypted:
+        secret: "MGICAQAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAjBgkqhkiG9w0BCQUxFhYUMjAyNDEyMzAxMjAwMDBaPwkGCSqGSIb3DQEJBQAwDQYJKoZIhvcNAQEBBQAEggEAlnrFghijklmnoPQRStuvwxyz"
+    # ENCRYPTED: Elasticsearch API key for administrative access
+    api_key:
+      encrypted:
+        secret: "MGICAQAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAjBgkqhkiG9w0BCQUxFhYUMjAyNDEyMzAxMjAwMDBaQAkGCSqGSIb3DQEJBQAwDQYJKoZIhvcNAQEBBQAEggEAmosFghijklmnoPQRStuvwxyz"
+
+# Application-specific settings
+application_settings:
+  # For application-generated cryptographic keys, use a key management service
+  jwt:
+    algorithm: "HS256"
+    expiration_hours: 24
+    # NOTE: JWT signing keys should be managed via a KMS, not hardcoded
+    
+  encryption:
+    # NOTE: AES keys should be managed via a KMS, not hardcoded
+    algorithm: "AES-256-CBC"
+    
+  rate_limiting:
+    default_rate: 1000
+    premium_rate: 5000
+    
+  cache:
+    ttl_seconds: 3600
+    max_size: 10000
+
+# Security configuration
+security:
+  cors:
+    allowed_origins: 
+      - "https://anime-app.example.com"
+      - "https://admin.anime-app.example.com"
+    allowed_methods: ["GET", "POST", "PUT", "DELETE"]
+    allowed_headers: ["Content-Type", "Authorization"]
+    allow_credentials: true
+    
+  session:
+    timeout_minutes: 30
+    secure_cookies: true
+    same_site: "strict"
+    
+  api:
+    require_https: true
+    max_request_size: "10MB"
+    timeout_seconds: 30
+
+# Monitoring and observability
+monitoring:
+  metrics:
+    enabled: true
+    port: 9090
+    
+  logging:
+    level: "INFO"
+    format: "json"
+    
+  tracing:
+    enabled: true
+    sampling_rate: 0.1
+
+# Feature flags
+features:
+  new_recommendation_algorithm: true
+  experimental_ui: false
+  premium_features: true
+  analytics_tracking: true
